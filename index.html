@@ -767,6 +767,22 @@
     if (rb) rb.innerHTML = resultHtml(top);
 
     progress();
+    
+    // === SEND TO GOOGLE SHEETS ===
+  fetch("PASTE_WEBHOOK_URL_HERE", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      created_at: new Date().toISOString(),
+      result: t.name,
+      result_key: top,
+      name: state.lead.fullName || '',
+      email: state.lead.email || '',
+      phone: state.lead.phone || '',
+      company: state.org.company || '',
+      answers: state.answers
+    })
+  }).catch(err => console.error(err));
   }
 
   function shareMessage(){
