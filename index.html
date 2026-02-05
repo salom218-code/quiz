@@ -758,18 +758,18 @@
   }
 
   function renderResult(){
-    resetScores();
-    const top = topType();
-    const t = TYPES.find(x => x.key === top);
+  resetScores();
+  const top = topType();
+  const t = TYPES.find(x => x.key === top);
 
-    safeText('resultTitle', 'התוצאה שלך: ' + t.name);
-    const rb = $('resultBody');
-    if (rb) rb.innerHTML = resultHtml(top);
+  safeText('resultTitle', 'התוצאה שלך: ' + t.name);
+  const rb = $('resultBody');
+  if (rb) rb.innerHTML = resultHtml(top);
 
-    progress();
-    
-    // === SEND TO GOOGLE SHEETS ===
-  fetch("PASTE_WEBHOOK_URL_HERE", {
+  progress();
+
+  // === SEND TO GOOGLE SHEETS ===
+  fetch("https://script.google.com/macros/s/AKfycbxCtBnQoBh5adQcOKG6lhNOe7prtdnTBzCp6kSa2rCqY9mtNcIEipPBC5E8kRlfkPKk/exec", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -782,8 +782,8 @@
       company: state.org.company || '',
       answers: state.answers
     })
-  }).catch(err => console.error(err));
-  }
+  }).catch(err => console.error("Sheets error:", err));
+}
 
   function shareMessage(){
     resetScores();
