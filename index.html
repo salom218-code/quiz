@@ -767,23 +767,33 @@
   if (rb) rb.innerHTML = resultHtml(top);
 
   progress();
+// === SEND TO GOOGLE SHEETS ===
+const sheetUrl = "https://script.google.com/macros/s/AKfycbxCtBnQoBh5adQcOKG6lhNOe7prtdnTBzCp6kSa2rCqY9mtNcIEipPBC5E8kRlfkPKk/exec";
 
-  // === SEND TO GOOGLE SHEETS ===
-  fetch("https://script.google.com/macros/s/AKfycbxCtBnQoBh5adQcOKG6lhNOe7prtdnTBzCp6kSa2rCqY9mtNcIEipPBC5E8kRlfkPKk/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      created_at: new Date().toISOString(),
-      result: t.name,
-      result_key: top,
-      name: state.lead.fullName || '',
-      email: state.lead.email || '',
-      phone: state.lead.phone || '',
-      company: state.org.company || '',
-      answers: state.answers
-    })
-  }).catch(err => console.error("Sheets error:", err));
-}
+// 1) בונים payload (האובייקט שאתה רוצה לשמור בשיטס)
+const payload = {
+  created_at: new Date().toISOString(),
+  result: t.name,
+  result_key: top,
+  name: state.lead.fullName || '',
+  email: state.lead.email || '',
+  phone: state.lead.phone || '',
+  company: state.org.company || '',
+  answers: state.answers
+};
+
+// 2) עוטפים אותו בבקשת POST "פשוטה" בלי headers (כדי שלא יהיה CORS preflight)
+const body = new URLSearchParams();
+body.append("data", JSON.stringify(payload));
+
+// 3) שולחים
+fetch(sheetUrl, {
+  method: "POST",
+  body: body
+})
+  .then(r => r.text())
+  .then(t => console.log("Sheets OK:", t))
+  .catch(err => console.error("Sheets error:", err));
 
   function shareMessage(){
     resetScores();
